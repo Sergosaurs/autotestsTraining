@@ -7,7 +7,8 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Selenide.*;
 import static com.codeborne.selenide.Selenide.open;
 
 public class CombiningUiAndRestTests {
@@ -33,10 +34,21 @@ public class CombiningUiAndRestTests {
         soundId = String.valueOf((Integer)JsonPath.read(json, "$.results[0].id"));
     }
 
+
+    //проверка в UI видимости кнопки "play"
     @Test
     public void playButtonTest() {
         open(URL_KEY + String.format("people/%s/sounds/%s/", username, soundId));
         $("#single_sample_player .play")
                 .should(Condition.visible);
+    }
+
+    //в результатах поиска присутствует заданный файл
+    @Test
+    public void filenameVerificationTest() {
+        open(URL_KEY + "search/?q=" + query);
+        $$(".sound_filename")
+                .get(0)
+                .should(text(filename));
     }
 }
